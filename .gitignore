@@ -1,0 +1,12 @@
+# macOS % windows
+
+# Arduino
+*.hex
+*.elf
+
+# VS Code & Arduino ide
+.vscode/ & .ide
+
+# Temporary files
+*.tmp
+*.bak

@@ -177,6 +177,12 @@ Final 10×4.5 configuration achieved:
 
 - **Joop Brokking** — Creator of the original YMFC-AL Flight Controller.
 
+This project is based on the original YMFC-AL Flight Controller developed by Joop Brokking.
+
+The repository includes additional engineering improvements, hardware optimization, PID tuning for both 8×4.5 and 10×4.5 propeller configurations, documentation, and experimental validation developed by:
+
+- Parmeet Singh & Pahul Sodhi
+
 ### Engineering Contributions
 
 

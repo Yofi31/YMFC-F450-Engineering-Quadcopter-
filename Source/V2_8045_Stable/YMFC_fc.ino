@@ -21,14 +21,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PID gain and limit settings
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-float pid_p_gain_roll = 1.45;               //Gain setting for the roll P-controller
+float pid_p_gain_roll = 1.3;               //Gain setting for the roll P-controller
 float pid_i_gain_roll = 0.04;              //Gain setting for the roll I-controller
 float pid_d_gain_roll = 18.0;              //Gain setting for the roll D-controller
 int pid_max_roll = 400;                    //Maximum output of the PID-controller (+/-)
 
-float pid_p_gain_pitch = pid_p_gain_roll;
-float pid_i_gain_pitch = pid_i_gain_roll;
-float pid_d_gain_pitch = pid_d_gain_roll;             //Gain setting for the pitch D-controller.
+float pid_p_gain_pitch = pid_p_gain_roll;  //Gain setting for the pitch P-controller.
+float pid_i_gain_pitch = pid_i_gain_roll;  //Gain setting for the pitch I-controller.
+float pid_d_gain_pitch = pid_d_gain_roll;  //Gain setting for the pitch D-controller.
 int pid_max_pitch = pid_max_roll;          //Maximum output of the PID-controller (+/-)
 
 float pid_p_gain_yaw = 4.0;                //Gain setting for the pitch P-controller. //4.0
@@ -71,7 +71,7 @@ boolean gyro_angles_set;
 //Setup routine
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void setup(){
-  Serial.begin(57600);
+  Serial.begin(250000);
   //Copy the EEPROM data for fast access data.
   for(start = 0; start <= 35; start++)eeprom_data[start] = EEPROM.read(start);
   start = 0;                                                                //Set start back to zero.
@@ -164,9 +164,9 @@ void setup(){
 void loop(){
 
   //65.5 = 1 deg/sec (check the datasheet of the MPU-6050 for more information).
-  gyro_roll_input = (gyro_roll_input * 0.8) + ((gyro_roll / 65.5) * 0.2);   //Gyro pid input is deg/sec.
-  gyro_pitch_input = (gyro_pitch_input * 0.8) + ((gyro_pitch / 65.5) * 0.2);//Gyro pid input is deg/sec.
-  gyro_yaw_input = (gyro_yaw_input * 0.8) + ((gyro_yaw / 65.5) * 0.2);      //Gyro pid input is deg/sec.
+  gyro_roll_input = (gyro_roll_input * 0.7) + ((gyro_roll / 65.5) * 0.3);   //Gyro pid input is deg/sec.
+  gyro_pitch_input = (gyro_pitch_input * 0.7) + ((gyro_pitch / 65.5) * 0.3);//Gyro pid input is deg/sec.
+  gyro_yaw_input = (gyro_yaw_input * 0.7) + ((gyro_yaw / 65.5) * 0.3);      //Gyro pid input is deg/sec.
 
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -288,23 +288,25 @@ if(abs(acc_x) < acc_total_vector){
     } 
 
     if (esc_1 < 1100) esc_1 = 1100;                                         //Keep the motors running.
-    if (esc_2 < 1100) esc_2 = 1100;                                         //Keep the motors running.static 
+    if (esc_2 < 1100) esc_2 = 1100;                                         //Keep the motors running.
     if (esc_3 < 1100) esc_3 = 1100;                                         //Keep the motors running.
     if (esc_4 < 1100) esc_4 = 1100;                                         //Keep the motors running.
 
     if(esc_1 > 2000)esc_1 = 2000;                                           //Limit the esc-1 pulse to 2000us.
     if(esc_2 > 2000)esc_2 = 2000;                                           //Limit the esc-2 pulse to 2000us.
     if(esc_3 > 2000)esc_3 = 2000;                                           //Limit the esc-3 pulse to 2000us.
-    if(esc_4 > 2000)esc_4 = 2000;
-    
+    if(esc_4 > 2000)esc_4 = 2000;                                           //Limit the esc-4 pulse to 2000us.  
   }
+
   else{
     esc_1 = 1000;                                                           //If start is not 2 keep a 1000us pulse for ess-1.
     esc_2 = 1000;                                                           //If start is not 2 keep a 1000us pulse for ess-2.
     esc_3 = 1000;                                                           //If start is not 2 keep a 1000us pulse for ess-3.
     esc_4 = 1000;                                                           //If start is not 2 keep a 1000us pulse for ess-4.
   }
-  
+
+
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   //Creating the pulses for the ESC's is explained in this video:
   //https://youtu.be/fqEkVcqxtU8
@@ -469,9 +471,6 @@ void calculate_pid(){
   else if(pid_i_mem_pitch < pid_max_pitch * -1)pid_i_mem_pitch = pid_max_pitch * -1;
 
   pid_output_pitch = pid_p_gain_pitch * pid_error_temp + pid_i_mem_pitch + pid_d_gain_pitch * (pid_error_temp - pid_last_pitch_d_error);
-
-}
-
   if(pid_output_pitch > pid_max_pitch)pid_output_pitch = pid_max_pitch;
   else if(pid_output_pitch < pid_max_pitch * -1)pid_output_pitch = pid_max_pitch * -1;
 
